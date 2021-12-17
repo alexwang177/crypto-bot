@@ -24,12 +24,15 @@ class Strategy:
 
         mva = self.sum / self.period
 
+        prev_price = self.prev_price
+        self.prev_price = price
+
         # upward trend, price crosses above mva
-        if self.prev_price and self.prev_price < mva and price > mva:
+        if prev_price and prev_price < mva and price > mva:
             return "BUY"
 
         # downward trend, price crosses below mva
-        if self.prev_price and self.prev_price > mva and price < mva:
+        if prev_price and prev_price > mva and price < mva:
             return "SELL"
 
         return "HOLD"

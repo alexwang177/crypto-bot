@@ -5,6 +5,7 @@
 import pandas as pd
 from binance.client import Client
 import datetime
+from strategy import Strategy
 
 # YOUR API KEYS HERE
 api_key = ""    #Enter your own API-key here
@@ -31,7 +32,10 @@ def csv_to_dataframe(filename):
     return pd.read_csv(filename, names=['timestamp', 'open', 'high', 'low', 'close', 'volume', 'close_time', 'quote_av', 'trades', 'tb_base_av', 'tb_quote_av', 'ignore' ])
 
 if __name__ == '__main__':
+    strat = Strategy(20)
     df = csv_to_dataframe('BTCUSDT-1m-2021-12-16.csv')
 
     for i, row in df.iterrows():
-        print(row["close"])
+        price = row["close"]
+        action = strat.take_action(price)
+        print(action)
