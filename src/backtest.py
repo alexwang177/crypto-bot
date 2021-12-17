@@ -3,6 +3,7 @@
 '''
 
 import pandas as pd
+import matplotlib.pyplot as plt
 from binance.client import Client
 import datetime
 from strategy import Strategy
@@ -38,10 +39,13 @@ if __name__ == '__main__':
     usd = 10**9
     btc = None
 
+    btc_price = []
+
     for i, row in df.iterrows():
         price = row["close"]
         action = strat.take_action(float(price))
 
+        btc_price.append(price)
         
         if usd and action == 'BUY':
             btc = usd / price
@@ -53,4 +57,9 @@ if __name__ == '__main__':
         print(f"price: {price} action: {action}")
         print(f"usd: {usd} btc: {btc} total value (usd): {usd if usd else btc * price}")
         print("--------------\n")
+
+    plt.figure(figsize=(24, 12))
+    plt.plot(range(len(btc_price)), btc_price)
+    plt.ylabel("BTC price (USD)")
+    plt.savefig(f'btc_{strat.period}_period_moving_average.png')
 
