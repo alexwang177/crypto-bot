@@ -34,8 +34,22 @@ def csv_to_dataframe(filename):
 if __name__ == '__main__':
     strat = Strategy(20)
     df = csv_to_dataframe('BTCUSDT-1m-2021-12-16.csv')
+    usd = 10**9
+    btc = None
 
     for i, row in df.iterrows():
         price = row["close"]
         action = strat.take_action(price)
-        print(action)
+
+        
+        if usd and action == 'BUY':
+            btc = usd / price
+            usd = None
+        elif btc and action == 'SELL':
+            usd = btc * price
+            btc = None
+        
+        print(f"price: {price} action: {action}")
+        print(f"usd: {usd} btc: {btc} total value (usd): {usd if usd else btc * price}")
+        print("--------------\n")
+
