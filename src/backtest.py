@@ -34,7 +34,7 @@ def csv_to_dataframe(filename):
 
 if __name__ == '__main__':
 
-    strat = Strategy(20)
+    strat = Strategy(5)
     df = pd.read_csv('BTCUSDT_MinuteBars.csv')
 
     start_usd = 10**9
