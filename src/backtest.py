@@ -27,8 +27,11 @@ def binanceBarExtractor(symbol):
     data.to_csv(filename)
     print('finished!')
 
+def csv_to_dataframe(filename):
+    return pd.read_csv(filename, names=['timestamp', 'open', 'high', 'low', 'close', 'volume', 'close_time', 'quote_av', 'trades', 'tb_base_av', 'tb_quote_av', 'ignore' ])
 
 if __name__ == '__main__':
-    # Obviously replace BTCUSDT with whichever symbol you want from binance
-    # Wherever you've saved this code is the same directory you will find the resulting CSV file
-    binanceBarExtractor('BTCUSDT')
+    df = csv_to_dataframe('BTCUSDT-1m-2021-12-16.csv')
+
+    for i, row in df.iterrows():
+        print(row["close"])
