@@ -41,7 +41,7 @@ def plot_data(x_data, y_data, labels, name):
 
 def run_backtest(strat, df):
 
-    start_usd = 1000
+    start_usd = 100
     start_btc = start_usd / df['close'][0]
 
     usd = start_usd
@@ -77,6 +77,8 @@ def run_backtest(strat, df):
         print(f'usd: {usd} btc: {btc} total value (usd): {portfolio_val}')
         print('--------------\n')
 
+    percent_change = ((portfolio[-1] - start_usd) / start_usd) * 100
+
     plot_data(x_data=[range(len(btc_price)), range(len(mvas))],
               y_data=[btc_price, mvas],
               labels=['BTC', 'Moving Average'],
@@ -86,6 +88,12 @@ def run_backtest(strat, df):
               y_data=[portfolio_hold, portfolio],
               labels=['Portfolio Hold', 'Portfolio'],
               name=f'btc_{strat.get_period()}_period_portfolio.png')
+
+    file = open(f'backtest_results/btc_{strat.get_period()}_summary.txt', 'w+')
+    file.write(f'Starting USD: {start_usd}\n')
+    file.write(f'Ending USD: {portfolio[-1]}\n')
+    file.write(f'Ending USD if hold: {portfolio_hold[-1]}\n')
+    file.write(f'Change: {percent_change} %\n')
 
 
 if __name__ == '__main__':
