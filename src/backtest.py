@@ -34,13 +34,19 @@ def csv_to_dataframe(filename):
 
 if __name__ == '__main__':
 
-    strat = Strategy(144)
+    strat = Strategy(20)
     df = pd.read_csv('BTCUSDT_MinuteBars.csv')
-    usd = 10**9
+
+    start_usd = 10**9
+    start_btc = start_usd / df["close"][0]
+
+    usd = start_usd
     btc = None
 
     btc_price = []
     mvas = []
+    portfolio = []
+    portfolio_hold = []
 
     for i, row in df.iterrows():
         price = row["close"]
@@ -55,9 +61,14 @@ if __name__ == '__main__':
         elif btc and action == 'SELL':
             usd = btc * price
             btc = None
+
+        portfolio_val = usd if usd else btc * price
+        portfolio.append(portfolio_val)
+
+        portfolio_hold.append(start_btc * price)
         
         print(f"price: {price} action: {action}")
-        print(f"usd: {usd} btc: {btc} total value (usd): {usd if usd else btc * price}")
+        print(f"usd: {usd} btc: {btc} total value (usd): {portfolio_val}")
         print("--------------\n")
 
     plt.figure(figsize=(24, 12))
@@ -66,3 +77,10 @@ if __name__ == '__main__':
     plt.ylabel("Price (USD)")
     plt.savefig(f'btc_{strat.get_period()}_period_moving_average.png')
 
+    plt.close()
+    
+    plt.figure(figsize=(24, 12))
+    plt.plot(range(len(portfolio_hold)), portfolio_hold, label="Portfolio Hold")
+    plt.plot(range(len(portfolio)), portfolio, label="Portfolio")
+    plt.ylabel("Price (USD)")
+    plt.savefig(f'btc_{strat.get_period()}_period_portfolio.png')
