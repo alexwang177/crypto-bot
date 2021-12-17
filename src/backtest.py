@@ -28,10 +28,7 @@ def plot_data(x_data, y_data, labels, name):
     plt.close()
 
 
-if __name__ == '__main__':
-
-    strat = SimpleMVA(30)
-    df = pd.read_csv('BTCUSDT_MinuteBars.csv')
+def run_backtest(strat, df):
 
     start_usd = 1000
     start_btc = start_usd / df["close"][0]
@@ -44,7 +41,7 @@ if __name__ == '__main__':
     portfolio = []
     portfolio_hold = []
 
-    for i, row in df.iterrows():
+    for _, row in df.iterrows():
         price = row["close"]
         action = strat.take_action(float(price))
 
@@ -69,8 +66,8 @@ if __name__ == '__main__':
         print(f"usd: {usd} btc: {btc} total value (usd): {portfolio_val}")
         print("--------------\n")
 
-    plot_data(x_data=[range(360), range(360)],
-              y_data=[btc_price[:360], mvas[:360]],
+    plot_data(x_data=[range(len(btc_price)), range(len(mvas))],
+              y_data=[btc_price, mvas],
               labels=['BTC', 'Moving Average'],
               name=f'btc_{strat.get_period()}_period_moving_average.png')
 
@@ -78,3 +75,13 @@ if __name__ == '__main__':
               y_data=[portfolio_hold, portfolio],
               labels=['Portfolio Hold', 'Portfolio'],
               name=f'btc_{strat.get_period()}_period_portfolio.png')
+
+
+if __name__ == '__main__':
+
+    strategies = [SimpleMVA(5), SimpleMVA(10), SimpleMVA(
+        20), SimpleMVA(60), SimpleMVA(144), SimpleMVA(1440)]
+    df = pd.read_csv('BTCUSDT_MinuteBars.csv')
+
+    for strat in strategies:
+        run_backtest(strat, df)
