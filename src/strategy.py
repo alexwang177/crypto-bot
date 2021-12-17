@@ -41,4 +41,4 @@ class Strategy:
         return self.period
 
     def get_mva(self):
-        return self.sum / self.period
+        return self.sum / self.period if len(self.window) == self.period else None

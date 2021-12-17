@@ -34,10 +34,10 @@ def csv_to_dataframe(filename):
 
 if __name__ == '__main__':
 
-    strat = Strategy(5)
+    strat = Strategy(10)
     df = pd.read_csv('BTCUSDT_MinuteBars.csv')
 
-    start_usd = 10**9
+    start_usd = 1000
     start_btc = start_usd / df["close"][0]
 
     usd = start_usd
@@ -53,7 +53,9 @@ if __name__ == '__main__':
         action = strat.take_action(float(price))
 
         btc_price.append(price)
-        mvas.append(strat.get_mva())
+
+        mva = strat.get_mva()
+        mvas.append(mva)
         
         if usd and action == 'BUY':
             btc = usd / price
@@ -72,8 +74,8 @@ if __name__ == '__main__':
         print("--------------\n")
 
     plt.figure(figsize=(24, 12))
-    plt.plot(range(len(btc_price)), btc_price, label="BTC")
-    plt.plot(range(len(mvas)), mvas, label="Moving Average")
+    plt.plot(range(360), btc_price[:360], label="BTC")
+    plt.plot(range(360), mvas[:360], label="Moving Average")
     plt.ylabel("Price (USD)")
     plt.legend(loc='upper center')
     plt.savefig(f'btc_{strat.get_period()}_period_moving_average.png')
