@@ -36,3 +36,9 @@ class Strategy:
             return "SELL"
 
         return "HOLD"
+
+    def get_period(self):
+        return self.period
+
+    def get_mva(self):
+        return self.sum / self.period

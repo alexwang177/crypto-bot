@@ -40,12 +40,14 @@ if __name__ == '__main__':
     btc = None
 
     btc_price = []
+    mvas = []
 
     for i, row in df.iterrows():
         price = row["close"]
         action = strat.take_action(float(price))
 
         btc_price.append(price)
+        mvas.append(strat.get_mva())
         
         if usd and action == 'BUY':
             btc = usd / price
@@ -59,7 +61,8 @@ if __name__ == '__main__':
         print("--------------\n")
 
     plt.figure(figsize=(24, 12))
-    plt.plot(range(len(btc_price)), btc_price)
-    plt.ylabel("BTC price (USD)")
-    plt.savefig(f'btc_{strat.period}_period_moving_average.png')
+    plt.plot(range(len(btc_price)), btc_price, label="BTC")
+    plt.plot(range(len(mvas)), mvas, label="Moving Average")
+    plt.ylabel("Price (USD)")
+    plt.savefig(f'btc_{strat.get_period()}_period_moving_average.png')
 
