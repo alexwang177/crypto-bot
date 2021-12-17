@@ -75,6 +75,7 @@ if __name__ == '__main__':
     plt.plot(range(len(btc_price)), btc_price, label="BTC")
     plt.plot(range(len(mvas)), mvas, label="Moving Average")
     plt.ylabel("Price (USD)")
+    plt.legend(loc='upper center')
     plt.savefig(f'btc_{strat.get_period()}_period_moving_average.png')
 
     plt.close()
@@ -83,4 +84,5 @@ if __name__ == '__main__':
     plt.plot(range(len(portfolio_hold)), portfolio_hold, label="Portfolio Hold")
     plt.plot(range(len(portfolio)), portfolio, label="Portfolio")
     plt.ylabel("Price (USD)")
+    plt.legend(loc='upper center')
     plt.savefig(f'btc_{strat.get_period()}_period_portfolio.png')
