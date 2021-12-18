@@ -50,7 +50,7 @@ def run_backtest(strat, port, df):
     portfolio = []
     portfolio_hold = []
 
-    for _, row in df.iterrows():
+    for i, row in df.iterrows():
 
         # get price of coin
         price = row['close']
@@ -97,18 +97,18 @@ if __name__ == '__main__':
 
     # Goal: user can enter any pair of currencies, for example BTC - USD, and the script will run all the specified backtests
 
-    strategies = [SimpleMVA(period=5, equity_per_trade=0.10,
-                            stop_loss=0.03, take_profit=0.06),
-                  SimpleMVA(period=10, equity_per_trade=0.10,
-                            stop_loss=0.03, take_profit=0.06),
-                  SimpleMVA(period=20, equity_per_trade=0.10,
-                            stop_loss=0.03, take_profit=0.06),
-                  SimpleMVA(period=60, equity_per_trade=0.10,
-                            stop_loss=0.03, take_profit=0.06),
-                  SimpleMVA(period=144, equity_per_trade=0.10,
-                            stop_loss=0.03, take_profit=0.06),
-                  SimpleMVA(period=1440, equity_per_trade=0.10,
-                            stop_loss=0.03, take_profit=0.06)]
+    strategies = [SimpleMVA(period=5, equity_per_trade=0.20,
+                            stop_loss=0.01, take_profit=0.01),
+                  SimpleMVA(period=10, equity_per_trade=0.20,
+                            stop_loss=0.01, take_profit=0.01),
+                  SimpleMVA(period=20, equity_per_trade=0.20,
+                            stop_loss=0.01, take_profit=0.01),
+                  SimpleMVA(period=60, equity_per_trade=0.20,
+                            stop_loss=0.01, take_profit=0.01),
+                  SimpleMVA(period=144, equity_per_trade=0.20,
+                            stop_loss=0.01, take_profit=0.01),
+                  SimpleMVA(period=1440, equity_per_trade=0.20,
+                            stop_loss=0.01, take_profit=0.01)]
 
     portfolios = [Portfolio(coin='BTC', coin_quantity=0,
                             fiat='USD', fiat_quantity=100),
@@ -125,5 +125,6 @@ if __name__ == '__main__':
 
     df = pd.read_csv('BTCUSDT_MinuteBars.csv')
 
-    for strat, port in zip(strategies, portfolios):
+    for i, strat, port in zip(range(len(strategies)), strategies, portfolios):
+        print(f'Backtesting strategy {i}\n')
         run_backtest(strat, port, df)

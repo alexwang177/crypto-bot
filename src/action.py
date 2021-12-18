@@ -5,7 +5,7 @@ class Action:
         self.currency = currency
         self.quantity = quantity
         self.price = price
-        self.stoploss = stop_loss
+        self.stop_loss = stop_loss
         self.take_profit = take_profit
 
         if stop_loss:

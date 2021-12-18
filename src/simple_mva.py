@@ -29,7 +29,10 @@ class SimpleMVA(Strategy):
 
             if order.signal == 'BUY' and (price >= order.take_profit_strike or price <= order.stop_loss_strike):
 
-                print('STOP LOSS OR TAKE PROFIT')
+                if price >= order.take_profit_strike:
+                    print('TAKE PROFIT')
+                else:
+                    print('STOP LOSS')
 
                 actions.append(Action(signal='SELL',
                                       currency=order.currency,
