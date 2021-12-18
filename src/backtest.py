@@ -42,12 +42,6 @@ def plot_data(x_data, y_data, labels, name):
 
 def run_backtest(strat, port, df):
 
-    # start_fiat = port.get_fiat_quantity()
-    # start_coin = start_fiat / df['close'][0]
-
-    # usd = start_usd
-    # btc = None
-
     start_fiat = port.get_fiat_quantity()
     start_coin = start_fiat / df['close'][0]
 
@@ -87,7 +81,8 @@ def run_backtest(strat, port, df):
         print(f'{port.get_fiat()}: {port.get_fiat_quantity()} {port.get_coin()}: {port.get_coin_quantity()} total value ({port.get_fiat()}): {port.get_value_in_fiat(coin_price=price)}')
         print('--------------\n')
 
-    percent_change = ((portfolio[-1] - start_fiat) / start_fiat) * 100
+    percent_change = ((portfolio.get_value_in_fiat() -
+                      start_fiat) / start_fiat) * 100
 
     plot_data(x_data=[range(len(coin_price)), range(len(mvas))],
               y_data=[coin_price, mvas],
@@ -111,12 +106,12 @@ if __name__ == '__main__':
 
     # Goal: user can enter any pair of currencies, for example BTC - USD, and the script will run all the specified backtests
 
-    strategies = [SimpleMVA(period=5, equity_per_trade=0.20),
-                  SimpleMVA(period=10, equity_per_trade=0.20),
-                  SimpleMVA(period=20, equity_per_trade=0.20),
-                  SimpleMVA(period=60, equity_per_trade=0.20),
-                  SimpleMVA(period=144, equity_per_trade=0.20),
-                  SimpleMVA(period=1440, equity_per_trade=0.20)]
+    strategies = [SimpleMVA(period=5, equity_per_trade=0.50),
+                  SimpleMVA(period=10, equity_per_trade=0.50),
+                  SimpleMVA(period=20, equity_per_trade=0.50),
+                  SimpleMVA(period=60, equity_per_trade=0.50),
+                  SimpleMVA(period=144, equity_per_trade=0.50),
+                  SimpleMVA(period=1440, equity_per_trade=0.50)]
 
     portfolios = [Portfolio(coin='BTC', coin_quantity=0,
                             fiat='USD', fiat_quantity=100),
