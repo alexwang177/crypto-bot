@@ -35,11 +35,11 @@ class SimpleMVA(Strategy):
 
         # upward trend, price crosses above mva
         if prev_price and prev_price < mva and price > mva:
-            return Action('BUY', port.get_coin(), self.equity_per_trade * port.get_value_in_coin())
+            return Action('BUY', port.get_coin(), self.equity_per_trade * port.get_value_in_coin(coin_price=price))
 
         # downward trend, price crosses below mva
         if prev_price and prev_price > mva and price < mva:
-            return Action('SELL', port.get_coin(), self.equity_per_trade * port.get_value_in_coin())
+            return Action('SELL', port.get_coin(), self.equity_per_trade * port.get_value_in_coin(coin_price=price))
 
         return Action("HOLD", port.get_coin(), None)
 

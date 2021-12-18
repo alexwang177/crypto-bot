@@ -73,18 +73,18 @@ def run_backtest(strat, port, df):
                 port.get_fiat_quantity() - (action.quantity * price))
             port.set_coin_quantity(
                 port.get_coin_quantity() + action.quantity)
-        elif action.signal == 'SELL':
+        elif action.signal == 'SELL' and port.get_coin_quantity() >= action.quantity:
             port.set_fiat_quantity(
                 port.get_fiat_quantity() + (action.quantity * price))
             port.set_coin_quantity(
-                port.get_fiat_quantity() - action.quantity
+                port.get_coin_quantity() - action.quantity
             )
 
-        portfolio.append(port.get_value_in_fiat())
+        portfolio.append(port.get_value_in_fiat(coin_price=price))
         portfolio_hold.append(start_coin * price)
 
         print(f'price: {price} action: {action}')
-        print(f'{port.get_fiat()}: {port.get_fiat_quantity()} {port.get_coin()}: {port.get_coin_quantity()} total value ({port.get_fiat()}): {port.get_value_in_fiat()}')
+        print(f'{port.get_fiat()}: {port.get_fiat_quantity()} {port.get_coin()}: {port.get_coin_quantity()} total value ({port.get_fiat()}): {port.get_value_in_fiat(coin_price=price)}')
         print('--------------\n')
 
     percent_change = ((portfolio[-1] - start_fiat) / start_fiat) * 100
