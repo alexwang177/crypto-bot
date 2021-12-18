@@ -61,18 +61,7 @@ def run_backtest(strat, port, df):
         mvas.append(mva)
 
         action = strat.take_action(price=float(price), port=port)
-
-        if action.signal == 'BUY' and port.get_fiat_quantity() >= action.quantity * price:
-            port.set_fiat_quantity(
-                port.get_fiat_quantity() - (action.quantity * price))
-            port.set_coin_quantity(
-                port.get_coin_quantity() + action.quantity)
-        elif action.signal == 'SELL' and port.get_coin_quantity() >= action.quantity:
-            port.set_fiat_quantity(
-                port.get_fiat_quantity() + (action.quantity * price))
-            port.set_coin_quantity(
-                port.get_coin_quantity() - action.quantity
-            )
+        port.handle_action(action)
 
         portfolio.append(port.get_value_in_fiat(coin_price=price))
         portfolio_hold.append(start_coin * price)

@@ -23,7 +23,7 @@ class SimpleMVA(Strategy):
         self.sum += price
 
         if len(self.window) < self.period:
-            return Action('HOLD', port.get_coin(), None)
+            return Action(signal='HOLD', currency=port.get_coin(), quantity=None, price=price)
 
         if len(self.window) > self.period:
             self.sum -= self.window.popleft()
@@ -35,23 +35,25 @@ class SimpleMVA(Strategy):
 
         # upward trend, price crosses above mva
         if prev_price and prev_price < mva and price > mva:
-            return Action('BUY',
-                          port.get_coin(),
-                          self.equity_per_trade *
+            return Action(signal='BUY',
+                          currency=port.get_coin(),
+                          quantity=self.equity_per_trade *
                           port.get_value_in_coin(coin_price=price),
+                          price=price,
                           stop_loss=0.03,
                           take_profit=0.06)
 
         # downward trend, price crosses below mva
         if prev_price and prev_price > mva and price < mva:
-            return Action('SELL',
-                          port.get_coin(),
-                          self.equity_per_trade *
+            return Action(signal='SELL',
+                          currency=port.get_coin(),
+                          quantity=self.equity_per_trade *
                           port.get_value_in_coin(coin_price=price),
+                          price=price,
                           stop_loss=0.03,
                           take_profit=0.06)
 
-        return Action('HOLD', port.get_coin(), None)
+        return Action(signal='HOLD', currency=port.get_coin(), quantity=None, price=price)
 
     def get_period(self):
         return self.period

@@ -35,3 +35,16 @@ class Portfolio:
 
     def set_fiat_quantity(self, new_fiat_quantity):
         self.fiat_quantity = new_fiat_quantity
+
+    def handle_action(self, action):
+        if action.signal == 'BUY' and self.get_fiat_quantity() >= action.quantity * action.price:
+            self.set_fiat_quantity(
+                self.get_fiat_quantity() - (action.quantity * action.price))
+            self.set_coin_quantity(
+                self.get_coin_quantity() + action.quantity)
+        elif action.signal == 'SELL' and self.get_coin_quantity() >= action.quantity:
+            self.set_fiat_quantity(
+                self.get_fiat_quantity() + (action.quantity * action.price))
+            self.set_coin_quantity(
+                self.get_coin_quantity() - action.quantity
+            )
