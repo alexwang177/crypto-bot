@@ -42,58 +42,68 @@ def plot_data(x_data, y_data, labels, name):
 
 def run_backtest(strat, port, df):
 
+    # start_fiat = port.get_fiat_quantity()
+    # start_coin = start_fiat / df['close'][0]
+
+    # usd = start_usd
+    # btc = None
+
     start_fiat = port.get_fiat_quantity()
     start_coin = start_fiat / df['close'][0]
 
-    usd = start_usd
-    btc = None
-
-    btc_price = []
+    coin_price = []
     mvas = []
     portfolio = []
     portfolio_hold = []
 
     for _, row in df.iterrows():
+
+        # get price of coin
         price = row['close']
-        action = strat.take_action(float(price))
+        coin_price.append(price)
 
-        btc_price.append(price)
-
+        # update moving average
         mva = strat.get_mva()
         mvas.append(mva)
 
-        if usd and action == 'BUY':
-            btc = usd / price
-            usd = None
-        elif btc and action == 'SELL':
-            usd = btc * price
-            btc = None
+        action = strat.take_action(price=float(price), port=port)
 
-        portfolio_val = usd if usd else btc * price
-        portfolio.append(portfolio_val)
+        if action.signal == 'BUY' and port.get_fiat_quantity() >= action.quantity * price:
+            port.set_fiat_quantity(
+                port.get_fiat_quantity() - (action.quantity * price))
+            port.set_coin_quantity(
+                port.get_coin_quantity() + action.quantity)
+        elif action.signal == 'SELL':
+            port.set_fiat_quantity(
+                port.get_fiat_quantity() + (action.quantity * price))
+            port.set_coin_quantity(
+                port.get_fiat_quantity() - action.quantity
+            )
 
-        portfolio_hold.append(start_btc * price)
+        portfolio.append(port.get_value_in_fiat())
+        portfolio_hold.append(start_coin * price)
 
         print(f'price: {price} action: {action}')
-        print(f'usd: {usd} btc: {btc} total value (usd): {portfolio_val}')
+        print(f'{port.get_fiat()}: {port.get_fiat_quantity()} {port.get_coin()}: {port.get_coin_quantity()} total value ({port.get_fiat()}): {port.get_value_in_fiat()}')
         print('--------------\n')
 
-    percent_change = ((portfolio[-1] - start_usd) / start_usd) * 100
+    percent_change = ((portfolio[-1] - start_fiat) / start_fiat) * 100
 
-    plot_data(x_data=[range(len(btc_price)), range(len(mvas))],
-              y_data=[btc_price, mvas],
-              labels=['BTC', 'Moving Average'],
-              name=f'btc_{strat.get_period()}_period_moving_average.png')
+    plot_data(x_data=[range(len(coin_price)), range(len(mvas))],
+              y_data=[coin_price, mvas],
+              labels=[port.get_coin(), 'Moving Average'],
+              name=f'{port.get_coin()}_{strat.get_period()}_period_moving_average.png')
 
     plot_data(x_data=[range(len(portfolio_hold)), range(len(portfolio))],
               y_data=[portfolio_hold, portfolio],
               labels=['Portfolio Hold', 'Portfolio'],
-              name=f'btc_{strat.get_period()}_period_portfolio.png')
+              name=f'{port.get_coin()}_{strat.get_period()}_period_portfolio.png')
 
-    file = open(f'backtest_results/btc_{strat.get_period()}_summary.txt', 'w+')
-    file.write(f'Starting USD: {start_usd}\n')
-    file.write(f'Ending USD: {portfolio[-1]}\n')
-    file.write(f'Ending USD if hold: {portfolio_hold[-1]}\n')
+    file = open(
+        f'backtest_results/{port.get_coin()}_{strat.get_period()}_summary.txt', 'w+')
+    file.write(f'Starting {port.get_fiat()}: {start_fiat}\n')
+    file.write(f'Ending {port.get_fiat()}: {portfolio[-1]}\n')
+    file.write(f'Ending {port.get_fiat()} if hold: {portfolio_hold[-1]}\n')
     file.write(f'Change: {percent_change} %\n')
 
 
