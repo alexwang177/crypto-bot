@@ -60,15 +60,17 @@ def run_backtest(strat, port, df):
         mva = strat.get_mva()
         mvas.append(mva)
 
-        action = strat.take_action(price=float(price), port=port)
-        port.handle_action(action)
+        actions = strat.take_action(price=float(price), port=port)
 
-        portfolio.append(port.get_value_in_fiat(coin_price=price))
-        portfolio_hold.append(start_coin * price)
+        for action in actions:
+            port.handle_action(action)
 
-        print(f'price: {price} action: {action}')
-        print(f'{port.get_fiat()}: {port.get_fiat_quantity()} {port.get_coin()}: {port.get_coin_quantity()} total value ({port.get_fiat()}): {port.get_value_in_fiat(coin_price=price)}')
-        print('--------------\n')
+            portfolio.append(port.get_value_in_fiat(coin_price=price))
+            portfolio_hold.append(start_coin * price)
+
+            # print(f'price: {price} action: {action}')
+            # print(f'{port.get_fiat()}: {port.get_fiat_quantity()} {port.get_coin()}: {port.get_coin_quantity()} total value ({port.get_fiat()}): {port.get_value_in_fiat(coin_price=price)}')
+            # print('--------------\n')
 
     percent_change = ((portfolio[-1] -
                       start_fiat) / start_fiat) * 100
@@ -95,12 +97,18 @@ if __name__ == '__main__':
 
     # Goal: user can enter any pair of currencies, for example BTC - USD, and the script will run all the specified backtests
 
-    strategies = [SimpleMVA(period=5, equity_per_trade=0.05),
-                  SimpleMVA(period=10, equity_per_trade=0.05),
-                  SimpleMVA(period=20, equity_per_trade=0.05),
-                  SimpleMVA(period=60, equity_per_trade=0.05),
-                  SimpleMVA(period=144, equity_per_trade=0.05),
-                  SimpleMVA(period=1440, equity_per_trade=0.05)]
+    strategies = [SimpleMVA(period=5, equity_per_trade=0.10,
+                            stop_loss=0.03, take_profit=0.06),
+                  SimpleMVA(period=10, equity_per_trade=0.10,
+                            stop_loss=0.03, take_profit=0.06),
+                  SimpleMVA(period=20, equity_per_trade=0.10,
+                            stop_loss=0.03, take_profit=0.06),
+                  SimpleMVA(period=60, equity_per_trade=0.10,
+                            stop_loss=0.03, take_profit=0.06),
+                  SimpleMVA(period=144, equity_per_trade=0.10,
+                            stop_loss=0.03, take_profit=0.06),
+                  SimpleMVA(period=1440, equity_per_trade=0.10,
+                            stop_loss=0.03, take_profit=0.06)]
 
     portfolios = [Portfolio(coin='BTC', coin_quantity=0,
                             fiat='USD', fiat_quantity=100),

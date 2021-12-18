@@ -21,7 +21,7 @@ def binanceBarExtractor(symbol, start_date_str):
 
     filename = '{}_MinuteBars.csv'.format(symbol)
 
-    klines = bclient.get_historical_klines(symbol, Client.KLINE_INTERVAL_1MINUTE, start_date.strftime(
+    klines = bclient.get_historical_klines(symbol, Client.KLINE_INTERVAL_5MINUTE, start_date.strftime(
         "%d %b %Y %H:%M:%S"), today.strftime("%d %b %Y %H:%M:%S"), 1000)
     data = pd.DataFrame(klines, columns=['timestamp', 'open', 'high', 'low', 'close',
                                          'volume', 'close_time', 'quote_av', 'trades', 'tb_base_av', 'tb_quote_av', 'ignore'])
@@ -31,3 +31,7 @@ def binanceBarExtractor(symbol, start_date_str):
     data.to_csv(filename)
 
     print('finished!')
+
+
+if __name__ == '__main__':
+    binanceBarExtractor('BTCUSDT', '1 Dec 2021')
