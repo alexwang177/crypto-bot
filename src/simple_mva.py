@@ -17,6 +17,16 @@ class SimpleMVA(Strategy):
         self.sum = 0
         self.window = deque()
         self.prev_price = None
+        self.orders = []
+
+    def _handle_stop_loss(self, price):
+
+        actions = []
+
+        for order in self.orders:
+            if price >= order.take_profit_strike:
+
+        return actions
 
     def take_action(self, price, port):
         self.window.append(price)
@@ -35,23 +45,29 @@ class SimpleMVA(Strategy):
 
         # upward trend, price crosses above mva
         if prev_price and prev_price < mva and price > mva:
-            return Action(signal='BUY',
-                          currency=port.get_coin(),
-                          quantity=self.equity_per_trade *
-                          port.get_value_in_coin(coin_price=price),
-                          price=price,
-                          stop_loss=0.03,
-                          take_profit=0.06)
+            buy_action = Action(signal='BUY',
+                                currency=port.get_coin(),
+                                quantity=self.equity_per_trade *
+                                port.get_value_in_coin(coin_price=price),
+                                price=price,
+                                stop_loss=0.03,
+                                take_profit=0.06)
+
+            self.orders.append(buy_action)
+            return buy_action
 
         # downward trend, price crosses below mva
         if prev_price and prev_price > mva and price < mva:
-            return Action(signal='SELL',
-                          currency=port.get_coin(),
-                          quantity=self.equity_per_trade *
-                          port.get_value_in_coin(coin_price=price),
-                          price=price,
-                          stop_loss=0.03,
-                          take_profit=0.06)
+            sell_action = Action(signal='SELL',
+                                 currency=port.get_coin(),
+                                 quantity=self.equity_per_trade *
+                                 port.get_value_in_coin(coin_price=price),
+                                 price=price,
+                                 stop_loss=0.03,
+                                 take_profit=0.06)
+
+            self.orders.append(sell_action)
+            return sell_action
 
         return Action(signal='HOLD', currency=port.get_coin(), quantity=None, price=price)
 
