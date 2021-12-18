@@ -17,14 +17,21 @@ class SimpleMVA(Strategy):
         self.sum = 0
         self.window = deque()
         self.prev_price = None
-        self.orders = []
+        self.buy_orders = []
 
-    def _handle_stop_loss(self, price):
+    def _handle_stop_loss_and_take_profit(self, price):
 
         actions = []
 
-        for order in self.orders:
-            if price >= order.take_profit_strike:
+        for order in self.buy_orders:
+
+            if order.signal == 'BUY' and (price >= order.take_profit_strike or price <= order.stop_loss_strike):
+                actions.append(Action(signal='SELL',
+                                      currency=order.currency,
+                                      quantity=order.quantity,
+                                      price=price))
+
+            self.buy_orders.remove(order)
 
         return actions
 
@@ -43,6 +50,9 @@ class SimpleMVA(Strategy):
         prev_price = self.prev_price
         self.prev_price = price
 
+        stop_loss_take_profit_actions = self._handle_stop_loss_and_take_profit(
+            price)
+
         # upward trend, price crosses above mva
         if prev_price and prev_price < mva and price > mva:
             buy_action = Action(signal='BUY',
@@ -54,7 +64,7 @@ class SimpleMVA(Strategy):
                                 take_profit=0.06)
 
             self.orders.append(buy_action)
-            return buy_action
+            return stop_loss_take_profit_actions + [buy_action]
 
         # downward trend, price crosses below mva
         if prev_price and prev_price > mva and price < mva:
@@ -62,14 +72,11 @@ class SimpleMVA(Strategy):
                                  currency=port.get_coin(),
                                  quantity=self.equity_per_trade *
                                  port.get_value_in_coin(coin_price=price),
-                                 price=price,
-                                 stop_loss=0.03,
-                                 take_profit=0.06)
+                                 price=price)
 
-            self.orders.append(sell_action)
-            return sell_action
+            return stop_loss_take_profit_actions + [sell_action]
 
-        return Action(signal='HOLD', currency=port.get_coin(), quantity=None, price=price)
+        return stop_loss_take_profit_actions + [Action(signal='HOLD', currency=port.get_coin(), quantity=None, price=price)]
 
     def get_period(self):
         return self.period
