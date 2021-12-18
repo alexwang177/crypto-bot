@@ -23,3 +23,9 @@ class Portfolio:
 
     def get_fiat_quantity(self):
         return self.fiat_quantity
+
+    def get_value_in_fiat(self, coin_price):
+        return self.fiat_quantity + (self.coin_quantity * coin_price)
+
+    def get_value_in_coin(self, coin_price):
+        return self.coin_quantity + (self.fiat_quantity / coin_price)

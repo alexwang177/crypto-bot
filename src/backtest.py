@@ -101,10 +101,25 @@ if __name__ == '__main__':
 
     # Goal: user can enter any pair of currencies, for example BTC - USD, and the script will run all the specified backtests
 
-    strategies = [SimpleMVA(5), SimpleMVA(10), SimpleMVA(
-        20), SimpleMVA(60), SimpleMVA(144), SimpleMVA(1440)]
-    portfolios = [Portfolio('BTC', 0, 'USD', 100), Portfolio('BTC', 0, 'USD', 100), Portfolio(
-        'BTC', 0, 'USD', 100), Portfolio('BTC', 0, 'USD', 100), Portfolio('BTC', 0, 'USD', 100), Portfolio('BTC', 0, 'USD', 100)]
+    strategies = [SimpleMVA(period=5, equity_per_trade=0.20),
+                  SimpleMVA(period=10, equity_per_trade=0.20),
+                  SimpleMVA(period=20, equity_per_trade=0.20),
+                  SimpleMVA(period=60, equity_per_trade=0.20),
+                  SimpleMVA(period=144, equity_per_trade=0.20),
+                  SimpleMVA(period=1440, equity_per_trade=0.20)]
+
+    portfolios = [Portfolio(coin='BTC', coin_quantity=0,
+                            fiat='USD', fiat_quantity=100),
+                  Portfolio(coin='BTC', coin_quantity=0,
+                            fiat='USD', fiat_quantity=100),
+                  Portfolio(coin='BTC', coin_quantity=0,
+                            fiat='USD', fiat_quantity=100),
+                  Portfolio(coin='BTC', coin_quantity=0,
+                            fiat='USD', fiat_quantity=100),
+                  Portfolio(coin='BTC', coin_quantity=0,
+                            fiat='USD', fiat_quantity=100),
+                  Portfolio(coin='BTC', coin_quantity=0,
+                            fiat='USD', fiat_quantity=100)]
 
     df = pd.read_csv('BTCUSDT_MinuteBars.csv')
 
