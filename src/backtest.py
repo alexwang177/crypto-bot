@@ -6,6 +6,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import os
 from simple_mva import SimpleMVA
+from portfolio import Portfolio
 
 
 def csv_to_dataframe(filename):
@@ -39,10 +40,10 @@ def plot_data(x_data, y_data, labels, name):
     plt.close()
 
 
-def run_backtest(strat, df):
+def run_backtest(strat, port, df):
 
-    start_usd = 100
-    start_btc = start_usd / df['close'][0]
+    start_fiat = port.get_fiat_quantity()
+    start_coin = start_fiat / df['close'][0]
 
     usd = start_usd
     btc = None
@@ -98,9 +99,14 @@ def run_backtest(strat, df):
 
 if __name__ == '__main__':
 
+    # Goal: user can enter any pair of currencies, for example BTC - USD, and the script will run all the specified backtests
+
     strategies = [SimpleMVA(5), SimpleMVA(10), SimpleMVA(
         20), SimpleMVA(60), SimpleMVA(144), SimpleMVA(1440)]
+    portfolios = [Portfolio('BTC', 0, 'USD', 100), Portfolio('BTC', 0, 'USD', 100), Portfolio(
+        'BTC', 0, 'USD', 100), Portfolio('BTC', 0, 'USD', 100), Portfolio('BTC', 0, 'USD', 100), Portfolio('BTC', 0, 'USD', 100)]
+
     df = pd.read_csv('BTCUSDT_MinuteBars.csv')
 
-    for strat in strategies:
-        run_backtest(strat, df)
+    for strat, port in zip(strategies, portfolios):
+        run_backtest(strat, port, df)
